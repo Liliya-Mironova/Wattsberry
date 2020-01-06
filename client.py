@@ -2,13 +2,15 @@ import json
 import socketio
 from urllib.request import urlopen
 from time import sleep
+from instance import config
 
 
 sio = socketio.Client()
 
 def send_ping():
     while True:
-      data = urlopen('http://192.168.0.30:8081/api/state')
+      #data = urlopen('http://192.168.0.30:8081/api/state')
+      data = {"std": "gnu"}
       data = json.dumps(data).encode('utf-8')
       sio.emit('add_data', data)
       sleep(3)
@@ -16,7 +18,7 @@ def send_ping():
 @sio.event
 
 def connect():
-    print('connected to server')
+    print('Connected to server')
     send_ping()
 
 if __name__ == '__main__':
@@ -24,11 +26,11 @@ if __name__ == '__main__':
   while True:
     try:
       if flag==0:
-        sio.connect('http://localhost:5000')
+        sio.connect("http://" + config.SERVER_HOST + ":" + str(config.SERVER_PORT))
         flag=1
 
       else:
         send_ping()
-    except socketio.Client-ConnectionError:
+    except socketio.exceptions.ConnectionError:
       print('Connection failed, try again.')
       sleep(3)
